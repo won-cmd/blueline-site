@@ -1,0 +1,39 @@
+name: Deploy to whois (bluelinestudio.kr)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build deploy folder (site files only)
+        run: |
+          mkdir dist
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='dist' \
+            --exclude='README.txt' \
+            --exclude='README.md' \
+            --exclude='*.bat' \
+            --exclude='sftp_cmds.txt' \
+            --exclude='upload_log.txt' \
+            ./ dist/
+          echo "Files to upload:"; find dist -type f | wc -l
+
+      - name: Deploy via SFTP to whois web root
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.5
+        with:
+          username: wonstart
+          server: 161.118.147.27
+          port: 22
+          password: ${{ secrets.FTP_PASSWORD }}
+          local_path: './dist/*'
+          remote_path: '/home1/wonstart/web'
+          sftp_only: true
