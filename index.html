@@ -486,7 +486,7 @@ a:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4
   function esc(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 
   function render(){
-    works.sort((a,b)=>a.folder.localeCompare(b.folder));
+    const ORD=Array.isArray(window.__WORK_FOLDERS)?window.__WORK_FOLDERS:[]; works.sort((a,b)=>{const ia=ORD.indexOf(a.folder),ib=ORD.indexOf(b.folder); if(ia<0&&ib<0)return a.folder.localeCompare(b.folder); if(ia<0)return 1; if(ib<0)return -1; return ia-ib;}); /* folders.js 목록 순서 = 화면 순서 (최신 출시작을 맨 위에) */
     const feat=document.getElementById('featured');
     const grid=document.getElementById('awgrid');
     let fi=0;
